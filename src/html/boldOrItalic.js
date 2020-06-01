@@ -1,7 +1,6 @@
 'use strict';
 
 var strings = require('../strings');
-var wrapping = require('./wrapping');
 
 function boldOrItalic (chunks, type) {
   wrapping_bold_italic(type === 'bold' ? 'strong' : 'em', strings.placeholders[type], chunks);
@@ -24,21 +23,21 @@ function wrapping_bold_italic(tag, placeholders, chunks){
     chunks.after = chunks.after.replace(rtrailing, '');
   }
   else if(!chunks.selection) {
-  	if(!trail && !lead && surrounded(chunks,tag)){
-  		chunks.selection = placeholders;
-        chunks.after = close + '>' + chunks.after;
-        chunks.before += open + '>';
-  	}
-  	else if(!trail && !lead surrounded(chunks, tag)) {
-  		chunks.before = chunks.before + close + '>' 
-  		chunks.after = '&#8203'+open + '>' + chunks.after; 
-  	}
-  	else if(trail) {
-  		chunks.after = chunks.after.replace(rtrailing, '&#8203');
-        chunks.before = chunks.before + close + '>';
-  	}
+    if(!trail && !lead && !surrounded(chunks,tag)) {
+      chunks.selection = placeholders;
+      chunks.after = close + '>' + chunks.after;
+      chunks.before += open + '>';
+    }
+    else if(!trail && !lead  && surrounded(chunks, tag)) {
+      chunks.before = chunks.before + close + '>';
+      chunks.after = '&#8203'+open + '>' + chunks.after; 
+    }
+    else if(trail) {
+      chunks.after = chunks.after.replace(rtrailing, '&#8203');
+      chunks.before = chunks.before + close + '>';
+    }
   }
-  else {
+  else{
     var opened = ropen.test(chunks.selection);
     if (opened) {
       chunks.selection = chunks.selection.replace(ropen, '');
@@ -67,13 +66,13 @@ function wrapping_bold_italic(tag, placeholders, chunks){
       } else {
         chunks.after = open + '>' + chunks.after;
       }
-    }
-    if (!closebounded(chunks, tag)) {
-      chunks.after = close + '>' + chunks.after;
-      chunks.before += open + '>';
+      }
+      if (!closebounded(chunks, tag)) {
+    	chunks.after = close + '>' + chunks.after;
+      	chunks.before += open + '>';
     }
     pushover();
-  }
+    }
 
   function pushover () {
     chunks.selection.replace(/<(\/)?([^> ]+)( [^>]*)?>/ig, pushoverOtherTags);
@@ -94,8 +93,8 @@ function wrapping_bold_italic(tag, placeholders, chunks){
       chunks.before = chunks.before.replace(/(<[^>]+(?: [^>]*)?>)$/, '</' + tag + '>$1');
     }
   }
-}
 
+}
 function closebounded (chunks, tag) {
   var rcloseleft = new RegExp('</' + tag.replace(/</g, '</') + '>$', 'i');
   var ropenright = new RegExp('^<' + tag + '(?: [^>]*)?>', 'i');
