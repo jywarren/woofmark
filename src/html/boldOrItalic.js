@@ -2,18 +2,18 @@
 
 var strings = require('../strings');
 
-function boldOrItalic (chunks, type) {
+function boldOrItalic(chunks, type) {
   wrappingBoldItalic(type === 'bold' ? 'strong' : 'em', strings.placeholders[type], chunks);
 }
 
-function wrappingBoldItalic(tag, placeholders, chunks){
-  var open = '<' + tag;                                            
-  var close = '</' + tag.replace(/</g, '</');                    
-  var rleading = new RegExp(open + '( [^>]*)?>$', 'i');            
-  var rtrailing = new RegExp('^' + close + '>', 'i');              
-  var ropen = new RegExp(open + '( [^>]*)?>', 'ig');               
-  var rclose = new RegExp(close + '( [^>]*)?>', 'ig');                  
-  
+function wrappingBoldItalic(tag, placeholders, chunks) {
+  var open = '<' + tag;
+  var close = '</' + tag.replace(/</g, '</');
+  var rleading = new RegExp(open + '( [^>]*)?>$', 'i');
+  var rtrailing = new RegExp('^' + close + '>', 'i');
+  var ropen = new RegExp(open + '( [^>]*)?>', 'ig');
+  var rclose = new RegExp(close + '( [^>]*)?>', 'ig');
+
   chunks.trim();
 
   var trail = rtrailing.exec(chunks.after);
@@ -21,23 +21,19 @@ function wrappingBoldItalic(tag, placeholders, chunks){
   if (lead && trail) {
     chunks.before = chunks.before.replace(rleading, '');
     chunks.after = chunks.after.replace(rtrailing, '');
-  }
-  else if(!chunks.selection) {
-    if(!trail && !lead && !surrounded(chunks,tag)) {
+  } else if (!chunks.selection) {
+    if (!trail && !lead && !surrounded(chunks, tag)) {
       chunks.selection = placeholders;
       chunks.after = close + '>' + chunks.after;
       chunks.before += open + '>';
-    }
-    else if(!trail && !lead  && surrounded(chunks, tag)) {
+    } else if (!trail && !lead && surrounded(chunks, tag)) {
       chunks.before = chunks.before + close + '>';
-      chunks.after = '&#8203'+open + '>' + chunks.after; 
-    }
-    else if(trail) {
+      chunks.after = '&#8203' + open + '>' + chunks.after;
+    } else if (trail) {
       chunks.after = chunks.after.replace(rtrailing, '&#8203');
       chunks.before = chunks.before + close + '>';
     }
-  }
-  else{
+  } else {
     var opened = ropen.test(chunks.selection);
     if (opened) {
       chunks.selection = chunks.selection.replace(ropen, '');
@@ -53,7 +49,8 @@ function wrappingBoldItalic(tag, placeholders, chunks){
       }
     }
     if (opened || closed) {
-      pushover(); return;
+      pushover();
+      return;
     }
     if (surrounded(chunks, tag)) {
       if (rleading.test(chunks.before)) {
@@ -66,19 +63,19 @@ function wrappingBoldItalic(tag, placeholders, chunks){
       } else {
         chunks.after = open + '>' + chunks.after;
       }
-      }
-      if (!closebounded(chunks, tag)) {
-        chunks.after = close + '>' + chunks.after;
-        chunks.before += open + '>';
+    }
+    if (!closebounded(chunks, tag)) {
+      chunks.after = close + '>' + chunks.after;
+      chunks.before += open + '>';
     }
     pushover();
-    }
+  }
 
-  function pushover () {
+  function pushover() {
     chunks.selection.replace(/<(\/)?([^> ]+)( [^>]*)?>/ig, pushoverOtherTags);
   }
 
-  function pushoverOtherTags (all, closing, tag, a, i) {
+  function pushoverOtherTags(all, closing, tag, a, i) {
     var attrs = a || '';
     var open = !closing;
     var rclosed = new RegExp('<\/' + tag.replace(/</g, '</') + '>', 'i');
@@ -95,7 +92,7 @@ function wrappingBoldItalic(tag, placeholders, chunks){
   }
 }
 
-function closebounded (chunks, tag) {
+function closebounded(chunks, tag) {
   var rcloseleft = new RegExp('</' + tag.replace(/</g, '</') + '>$', 'i');
   var ropenright = new RegExp('^<' + tag + '(?: [^>]*)?>', 'i');
   var bounded = rcloseleft.test(chunks.before) && ropenright.test(chunks.after);
@@ -106,7 +103,7 @@ function closebounded (chunks, tag) {
   return bounded;
 }
 
-function surrounded (chunks, tag) {
+function surrounded(chunks, tag) {
   var ropen = new RegExp('<' + tag + '(?: [^>]*)?>', 'ig');
   var rclose = new RegExp('<\/' + tag.replace(/</g, '</') + '>', 'ig');
   var opensBefore = count(chunks.before, ropen);
@@ -117,7 +114,7 @@ function surrounded (chunks, tag) {
   var close = closesAfter - opensAfter > 0;
   return open && close;
 
-  function count (text, regex) {
+  function count(text, regex) {
     var match = text.match(regex);
     if (match) {
       return match.length;
