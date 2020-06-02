@@ -3,10 +3,10 @@
 var strings = require('../strings');
 
 function boldOrItalic (chunks, type) {
-  wrapping_bold_italic(type === 'bold' ? 'strong' : 'em', strings.placeholders[type], chunks);
+  wrappingBoldItalic(type === 'bold' ? 'strong' : 'em', strings.placeholders[type], chunks);
 }
 
-function wrapping_bold_italic(tag, placeholders, chunks){
+function wrappingBoldItalic(tag, placeholders, chunks){
   var open = '<' + tag;                                            
   var close = '</' + tag.replace(/</g, '</');                    
   var rleading = new RegExp(open + '( [^>]*)?>$', 'i');            
@@ -68,8 +68,8 @@ function wrapping_bold_italic(tag, placeholders, chunks){
       }
       }
       if (!closebounded(chunks, tag)) {
-    	chunks.after = close + '>' + chunks.after;
-      	chunks.before += open + '>';
+        chunks.after = close + '>' + chunks.after;
+        chunks.before += open + '>';
     }
     pushover();
     }
@@ -93,8 +93,8 @@ function wrapping_bold_italic(tag, placeholders, chunks){
       chunks.before = chunks.before.replace(/(<[^>]+(?: [^>]*)?>)$/, '</' + tag + '>$1');
     }
   }
-
 }
+
 function closebounded (chunks, tag) {
   var rcloseleft = new RegExp('</' + tag.replace(/</g, '</') + '>$', 'i');
   var ropenright = new RegExp('^<' + tag + '(?: [^>]*)?>', 'i');
