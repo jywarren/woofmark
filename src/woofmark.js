@@ -218,7 +218,21 @@ function woofmark (textarea, options) {
       if (currentMode === 'html') {
         textarea.value = parse('parseHTML', textarea.value).trim();
       } else {
-        textarea.value = parse('parseHTML', editable).trim();
+        var regexp = /\*\*[A-Z][^*]+ \*\*/gi;
+       textarea.value = parse('parseHTML', editable).trim();
+       if (textarea.value.match(regexp)) {
+         var reg = textarea.value.match(regexp);
+        
+         for (let i = 0; i <= reg.length - 1; i++) {
+           var regexp2 = /\*\*[A-Z][^*]+ \*\*/i;
+           if (textarea.value.match(regexp2)) {
+             reg[i] = reg[i].replace(' **', '** ')
+             textarea.value = textarea.value.replace(regexp2, reg[i])
+             //console.log(textarea.value);
+           }
+         }
+       }
+
       }
     } else if (nextMode === 'html') {
       if (currentMode === 'markdown') {
