@@ -1,13 +1,15 @@
 const timeout = process.env.SLOWMO ? 130000 : 40000;
 const fs = require('fs');
 beforeAll(async () => {
-  path = fs.realpathSync('file://../test.html');
+  path = fs.realpathSync('file://../index.html');
   await page.goto('file://' + path, {waitUntil: 'domcontentloaded'});
 });
 
 describe('bold module work as expected', () => {
 
   test('bold text does not loose formatting after converting to markdown and back to rich', async () => {
+    await page.evaluate(() => document.querySelector('.wk-wysiwyg').innerHTML = '');
+
     await page.waitForSelector('.wk-wysiwyg');
     await page.keyboard.type(' not using bold ', {delay: 160});
     await page.keyboard.down('Control');
