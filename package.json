@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "browserify": "8.1.0",
-    "clean-css": "3.0.4",
+    "clean-css": "4.2.3",
     "domador": "2.4.3",
     "jest": "^26.1.0",
     "jest-puppeteer": "^4.4.0",
