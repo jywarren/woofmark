@@ -13,7 +13,6 @@ var getCommandHandler = require('./getCommandHandler');
 var getSurface = require('./getSurface');
 var classes = require('./classes');
 var renderers = require('./renderers');
-var xhrStub = require('./xhrStub');
 var prompt = require('./prompts/prompt');
 var closePrompts = require('./prompts/close');
 var modeNames = ['markdown', 'html', 'wysiwyg'];
@@ -63,7 +62,6 @@ function woofmark (textarea, options) {
   if (o.prompts.image === void 0) { o.prompts.image = prompt; }
   if (o.prompts.attachment === void 0) { o.prompts.attachment = prompt; }
   if (o.prompts.close === void 0) { o.prompts.close = closePrompts; }
-  if (o.xhr === void 0) { o.xhr = xhrStub; }
   if (o.classes === void 0) { o.classes = {}; }
   if (o.classes.wysiwyg === void 0) { o.classes.wysiwyg = []; }
   if (o.classes.prompts === void 0) { o.classes.prompts = {}; }
@@ -87,7 +85,7 @@ function woofmark (textarea, options) {
     parseMarkdown: o.parseMarkdown,
     parseHTML: o.parseHTML,
     destroy: destroy,
-    value: getMarkdown,
+    value: getOrSetValue,
     textarea: textarea,
     editable: o.wysiwyg ? editable : null,
     setMode: persistMode,
@@ -181,7 +179,7 @@ function woofmark (textarea, options) {
     if (place) { parent[mov](place); }
     parent[mov](commands);
     parent[mov](switchboard);
-    if ((o.images || o.attachments) && o.xhr) {
+    if (o.images || o.attachments) {
       parent[mov](droparea);
       uploads(parent, droparea, editor, o, remove);
     }
@@ -221,6 +219,34 @@ function woofmark (textarea, options) {
         textarea.value = parse('parseHTML', textarea.value).trim();
       } else {
         textarea.value = parse('parseHTML', editable).trim();
+        // if textarea contains wrongly formatted bold or italic text i.e texts that have space before the closing tag
+        // E.g **text **, remove the space before the tag and place it after the tag.
+        const matchWrongBold = /\*\*[A-Z][^*]+ \*\*/gi;
+        const matchWrongItalic = /_[A-Z][^_]+ _/gi;
+
+       if (textarea.value.match(matchWrongBold)) {
+         const wrongBoldCount = textarea.value.match(matchWrongBold);
+         const matchWrongBold2 = /\*\*[A-Z][^*]+ \*\*/i;
+        
+         for (let i = 0; i <= wrongBoldCount.length - 1; i++) {
+           if (textarea.value.match(matchWrongBold2)) {
+            wrongBoldCount[i] = wrongBoldCount[i].replace(' **', '** ');
+             textarea.value = textarea.value.replace(matchWrongBold2, wrongBoldCount[i]);
+           }
+         }
+       }
+
+       if (textarea.value.match(matchWrongItalic)) {
+        const wrongItalicCount = textarea.value.match(matchWrongItalic);
+        const matchWrongItalic2 = /_[A-Z][^_]+ _/i;
+       
+        for (let i = 0; i <= wrongItalicCount.length - 1; i++) {
+          if (textarea.value.match(matchWrongItalic2)) {
+            wrongItalicCount[i] = wrongItalicCount[i].replace(' _', '_ ');
+            textarea.value = textarea.value.replace(matchWrongItalic2, wrongItalicCount[i]);
+          }
+        }
+      }
       }
     } else if (nextMode === 'html') {
       if (currentMode === 'markdown') {
@@ -286,6 +312,23 @@ function woofmark (textarea, options) {
       return o.parseHTML(textarea.value);
     }
     return textarea.value;
+  }
+
+  function getOrSetValue (input) {
+    var markdown = String(input);
+    var sets = arguments.length === 1;
+    if (sets) {
+      if (editor.mode === 'wysiwyg') {
+        editable.innerHTML = asHtml();
+      } else {
+        textarea.value = editor.mode === 'html' ? asHtml() : markdown;
+      }
+      history.reset();
+    }
+    return getMarkdown();
+    function asHtml () {
+      return o.parseMarkdown(markdown);
+    }
   }
 
   function addCommandButton (id, combo, fn) {
