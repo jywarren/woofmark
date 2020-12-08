@@ -39,7 +39,7 @@
     "jest-puppeteer": "^4.4.0",
     "jshint": "^2.11.1",
     "megamark": "3.2.2",
-    "nib": "1.0.4",
+    "nib": "1.1.2",
     "puppeteer": "^2.1.1",
     "stylus": "^0.54.8",
     "terser": "^4.8.0",
