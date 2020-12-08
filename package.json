@@ -43,6 +43,6 @@
     "puppeteer": "^2.1.1",
     "stylus": "^0.54.8",
     "terser": "^4.8.0",
-    "watchify": "2.2.1"
+    "watchify": "3.11.1"
   }
 }
