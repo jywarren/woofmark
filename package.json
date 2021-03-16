@@ -26,7 +26,7 @@
   "dependencies": {
     "bullseye": "1.4.6",
     "bureaucracy": "1.0.7",
-    "crossvent": "1.5.0",
+    "crossvent": "1.5.5",
     "http-server": "^0.12.3",
     "kanye": "3.0.2",
     "local-storage": "1.4.2",
