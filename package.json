@@ -36,7 +36,7 @@
     "browserify": "16.5.2",
     "clean-css-cli": "^4.3.0",
     "domador": "2.4.3",
-    "jest": "^26.1.0",
+    "jest": "^27.0.6",
     "jest-puppeteer": "^4.4.0",
     "jshint": "^2.11.1",
     "megamark": "3.2.2",
